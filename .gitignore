@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
+.env
+.env.local
+apps/api/uploads/*
+!apps/api/uploads/.gitkeep
+apps/web/src/routeTree.gen.ts
+server.js
+

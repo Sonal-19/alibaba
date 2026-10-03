@@ -1,0 +1,227 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Sufi palette: dargah-green night, aged gold, chadar maroon, ivory. */
+  --night: #0b1f1c;
+  --night-2: #123a33;
+  --maroon: #8a2846;
+  --gold: #c9a24a;
+  --gold-light: #ecd9a0;
+  --ivory: #f7f2e7;
+  --emerald: #0e6b5c;
+
+  --background: #f7f2e7;
+  --foreground: #13241f;
+  --card: #fffdf8;
+  --card-foreground: #13241f;
+  --popover: #fffdf8;
+  --popover-foreground: #13241f;
+  --primary: #0e6b5c;
+  --primary-foreground: #ffffff;
+  --secondary: #0b1f1c;
+  --secondary-foreground: #f7f2e7;
+  --muted: #efe6d2;
+  --muted-foreground: #5f6359;
+  --accent: #efe2c4;
+  --accent-foreground: #6b4a12;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2d6bc;
+  --input: #d9ccae;
+  --ring: #0e6b5c;
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-maroon: var(--maroon);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-ivory: var(--ivory);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Mukta", "Noto Sans Gurmukhi", system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-brand: "Cinzel Decorative", "Cormorant Garamond", serif;
+  --font-gurmukhi: "Noto Sans Gurmukhi", "Mukta", sans-serif;
+  --font-urdu: "Amiri", "Noto Nastaliq Urdu", serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #a59d8a;
+  }
+}
+
+.text-gold-gradient {
+  background: linear-gradient(
+    100deg,
+    var(--gold-light),
+    var(--gold) 45%,
+    var(--maroon)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-mandala {
+  background-image: url("/hero-bg.svg");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Jaali (pierced-stone lattice) pattern, tinted with currentColor-like gold. */
+.bg-jaali {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23c9a24a' stroke-opacity='.16' stroke-width='1'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3Ccircle cx='28' cy='28' r='9'/%3E%3Cpath d='M28 0v8M28 48v8M0 28h8M48 28h8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 56px 56px;
+}
+
+/* Mehrab (dargah arch) mask for photos and cards. */
+.arch {
+  border-radius: 999px 999px 1rem 1rem;
+}
+.arch-pointed {
+  clip-path: polygon(
+    0 100%,
+    0 34%,
+    6% 22%,
+    16% 12%,
+    30% 5%,
+    44% 1%,
+    50% 0,
+    56% 1%,
+    70% 5%,
+    84% 12%,
+    94% 22%,
+    100% 34%,
+    100% 100%
+  );
+}
+
+@keyframes whirl {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-whirl {
+  animation: whirl var(--whirl-duration, 60s) linear infinite;
+}
+.animate-whirl-reverse {
+  animation: whirl var(--whirl-duration, 90s) linear infinite reverse;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 0.65;
+    transform: scale(0.94) translateY(1px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+.animate-flicker {
+  animation: flicker 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-whirl,
+  .animate-whirl-reverse,
+  .animate-flicker,
+  .marquee-track {
+    animation: none;
+  }
+}
+
+.prose-sw h2 {
+  @apply mt-8 mb-3 font-display text-2xl text-night;
+}
+.prose-sw h3 {
+  @apply mt-6 mb-2 font-display text-xl text-night;
+}
+.prose-sw p {
+  @apply my-4 leading-relaxed;
+}
+.prose-sw ul {
+  @apply my-4 list-disc pl-6 space-y-1;
+}
+.prose-sw ol {
+  @apply my-4 list-decimal pl-6 space-y-1;
+}
+.prose-sw a {
+  @apply text-primary underline underline-offset-4;
+}
+.prose-sw strong {
+  @apply font-semibold text-night;
+}
+.prose-sw blockquote {
+  @apply border-l-4 border-gold pl-4 italic text-muted-foreground;
+}
+
+/* Infinite poster marquee (hero "Latest Releases"). The track holds the list
+ * twice, so sliding it by -50% lands exactly where it started. */
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquee-track {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track,
+.marquee[data-paused="true"] .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-fade {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 5%,
+    #000 95%,
+    transparent
+  );
+}
