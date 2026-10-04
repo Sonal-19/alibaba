@@ -3,9 +3,9 @@ set -euo pipefail
 
 # ====== CONFIG ======
 REMOTE="root@oc"
-REMOTE_DIR="/root/sardarali/server"
-SESSION="sardarali-api"
-PORT="4300"
+REMOTE_DIR="/root/alibaba/server"
+SESSION="alibaba-api"
+PORT="4400"
 
 log() { echo -e "\033[0;32m$1\033[0m"; }
 err() { echo -e "\033[0;31m$1\033[0m"; }
@@ -34,6 +34,6 @@ ssh "$REMOTE" bash <<REMOTE_EOF
   curl -fsS http://127.0.0.1:$PORT/health && echo
 REMOTE_EOF
 
-log "✅ Backend deployed: https://sardarali.com.u4.lol/api/"
+log "✅ Backend deployed: https://alibaba.com.u4.lol/api/"
 echo "  Logs:   ssh $REMOTE 'tail -f $REMOTE_DIR/server.log'"
 echo "  Attach: ssh $REMOTE -t 'tmux attach -t $SESSION'"

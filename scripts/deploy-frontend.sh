@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ====== CONFIG ======
 REMOTE="root@oc"
-REMOTE_FINAL="/var/www/sardarali/front-end/"
+REMOTE_FINAL="/var/www/alibaba/front-end/"
 BUILD_DIR="apps/web/dist"
 
 log() { echo -e "\033[0;32m$1\033[0m"; }
@@ -25,4 +25,4 @@ log "📂 Step 1/2: Syncing hashed assets..."
 log "📄 Step 2/2: Syncing root files..."
 rsync -av --delete --exclude="assets/" --exclude=".DS_Store" "$BUILD_DIR/" "$REMOTE:$REMOTE_FINAL"
 
-log "✅ Frontend deployed: https://sardarali.com.u4.lol"
+log "✅ Frontend deployed: https://alibaba.com.u4.lol"

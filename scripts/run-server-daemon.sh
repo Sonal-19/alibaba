@@ -9,8 +9,8 @@ export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 SERVER_FILE="server.js"
-LOG_FILE="/root/sardarali/server/server.log"
-PID_FILE="/root/sardarali/server/server.pid"
+LOG_FILE="/root/alibaba/server/server.log"
+PID_FILE="/root/alibaba/server/server.pid"
 MAX_RESTART_DELAY=60
 MIN_UPTIME=10
 
@@ -40,7 +40,7 @@ if [ -f ".env" ]; then
 fi
 
 export NODE_ENV=production
-PORT="${PORT:-4300}"
+PORT="${PORT:-4400}"
 
 check_port() {
     if lsof -Pi :"$PORT" -sTCP:LISTEN -t >/dev/null 2>&1; then
