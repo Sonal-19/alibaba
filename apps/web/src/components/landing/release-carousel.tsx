@@ -478,6 +478,8 @@ export function ReleasesSection() {
 
   if (!current) return null;
 
+  const [isStageHovered, setIsStageHovered] = useState(false);
+
   return (
     <section
       id="releases"
@@ -499,151 +501,286 @@ export function ReleasesSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid items-center gap-10 lg:grid-cols-[minmax(0,420px)_1fr]">
-          {/* Spotlight */}
+        {/* ========================================================================= */}
+        {/* GRAND SPOTLIGHT THEATER (Clear Uncropped Artwork + Sliding Vinyl Stage) */}
+        {/* ========================================================================= */}
+        <div
+          onMouseEnter={() => {
+            setIsPaused(true);
+            setIsStageHovered(true);
+          }}
+          onMouseLeave={() => {
+            setIsPaused(false);
+            setIsStageHovered(false);
+          }}
+          className="mt-12 relative overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-br from-night via-night-2 to-[#0a1815] p-6 sm:p-8 lg:p-10 shadow-2xl shadow-black/40"
+        >
+          {/* Dynamic artwork aura matching current release colors */}
+          <div
+            className="pointer-events-none absolute -inset-24 opacity-25 blur-3xl transition-all duration-1000"
+            style={{
+              backgroundImage: `url(${current.posterPath})`,
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+            }}
+          />
+
           <AnimatePresence mode="wait">
             <motion.div
               key={current.title}
-              initial={{ opacity: 0, y: 16, rotate: -1 }}
-              animate={{ opacity: 1, y: 0, rotate: 0 }}
-              exit={{ opacity: 0, y: -16, rotate: 1 }}
-              transition={{ duration: 0.4 }}
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-              className="mx-auto w-full max-w-sm lg:max-w-none"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.45 }}
+              className="relative z-10 grid gap-8 lg:grid-cols-12 lg:items-center"
             >
-              <div className="arch relative overflow-hidden border-2 border-gold/60 bg-night p-2 shadow-2xl shadow-night/30">
-                <div className="arch relative aspect-[4/5] overflow-hidden">
-                  <img
-                    src={current.posterPath}
-                    alt={current.title}
-                    className="size-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-night via-night/20 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-5 text-ivory">
-                    {current.subtitle && (
-                      <p className="text-xs font-semibold tracking-[0.2em] text-gold-light uppercase">
-                        {current.subtitle}
-                      </p>
-                    )}
-                    <h3 className="mt-1 font-display text-3xl font-bold">
-                      {current.title}
-                    </h3>
-                    {current.caption && (
-                      <p className="mt-1 line-clamp-2 text-sm text-ivory/75">
-                        {current.caption}
-                      </p>
-                    )}
-                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                      {current.links.slice(0, 5).map((l) => (
-                        <PlatformButton
-                          key={`${l.platform}-${l.url}`}
-                          platform={l.platform}
-                          url={l.url}
-                        />
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => setOpen(current)}
-                        className="ml-auto rounded-full border border-gold/50 px-3 py-1 text-xs font-semibold text-gold-light transition hover:bg-gold hover:text-night cursor-pointer"
-                      >
-                        Details
-                      </button>
+              {/* Left Column: Full Uncropped Artwork Sleeve + Spinning Gold Vinyl Record */}
+              <div className="lg:col-span-6 xl:col-span-6 flex items-center justify-center">
+                <div className="relative w-full max-w-md sm:max-w-lg flex items-center justify-center">
+                  {/* Peeking Gold Vinyl Record */}
+                  <motion.div
+                    animate={{
+                      rotate: 360,
+                      x: isStageHovered ? 40 : 18,
+                    }}
+                    transition={{
+                      rotate: {
+                        duration: 10,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: "linear",
+                      },
+                      x: { duration: 0.35, ease: "easeOut" },
+                    }}
+                    className="pointer-events-none absolute -right-2 sm:right-0 size-48 sm:size-60 lg:size-64 rounded-full bg-night border-2 border-gold/50 shadow-2xl shadow-black/80 flex items-center justify-center overflow-hidden"
+                  >
+                    {/* Vinyl microgrooves */}
+                    <div className="size-full rounded-full bg-[repeating-radial-gradient(circle,#161e1b_0_2px,#0b1311_2px_4px)] opacity-90" />
+                    {/* Center golden label */}
+                    <div className="absolute size-20 sm:size-24 rounded-full bg-gradient-to-tr from-gold via-maroon to-gold-light border-2 border-gold flex items-center justify-center p-2 text-center shadow-inner">
+                      <Disc3 className="size-8 text-night" />
+                    </div>
+                  </motion.div>
+
+                  {/* Album Artwork Sleeve holding the 100% complete poster */}
+                  <div className="relative z-10 w-[84%] sm:w-[86%] rounded-2xl overflow-hidden border-2 border-gold/60 bg-black/90 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-md p-2">
+                    {/* Badges */}
+                    <div className="absolute top-4 left-4 z-20 flex flex-wrap items-center gap-1.5 pointer-events-none">
+                      {currentOriginalIndex === newest && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-gold to-maroon px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-night shadow">
+                          <Music className="size-3" /> NEW
+                        </span>
+                      )}
+                      {/* <span className="inline-flex items-center gap-1 rounded-full bg-black/75 border border-gold/40 px-2 py-0.5 text-[9px] font-semibold text-gold-light tracking-wider uppercase backdrop-blur-sm">
+                        {current.aspect === "wide" ? "16:9 Video" : "1:1 Album"}
+                      </span> */}
+                    </div>
+
+                    {/* Artwork Container: complete, uncropped display */}
+                    <div
+                      className={cn(
+                        "w-full flex items-center justify-center rounded-xl bg-black/60 overflow-hidden relative",
+                        current.aspect === "wide"
+                          ? "aspect-video max-h-[260px] sm:max-h-[320px]"
+                          : "aspect-square max-h-[320px] sm:max-h-[380px]",
+                      )}
+                    >
+                      <img
+                        src={current.posterPath}
+                        alt={current.title}
+                        className="size-full object-contain drop-shadow-2xl rounded-lg"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Right Column: Track Details & Platform Actions */}
+              <div className="lg:col-span-6 xl:col-span-6 text-ivory space-y-4">
+                {/* Track header meta */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gold/20 pb-3">
+                  <span className="font-brand text-xs font-semibold tracking-[0.28em] text-gold-light uppercase">
+                    KALAM 0{currentOriginalIndex + 1} OF 0{items.length}
+                  </span>
+                  <div
+                    className="flex items-center gap-1.5"
+                    title="Active track playing"
+                  >
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-gold-light/80">
+                      NOW SPOTLIGHTED
+                    </span>
+                    <div className="flex items-end gap-0.5 h-3.5">
+                      {[0, 1, 2, 3].map((b) => (
+                        <motion.span
+                          key={b}
+                          animate={{
+                            height: ["25%", "100%", "40%", "90%", "25%"],
+                          }}
+                          transition={{
+                            duration: 1.1,
+                            delay: b * 0.15,
+                            repeat: Number.POSITIVE_INFINITY,
+                          }}
+                          className="w-0.5 rounded-full bg-gold"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Title & Subtitle */}
+                <div>
+                  {current.subtitle && (
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-light">
+                      {current.subtitle}
+                    </p>
+                  )}
+                  <h3 className="mt-1 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-ivory tracking-tight">
+                    {current.title}
+                  </h3>
+                  {current.releaseDate && (
+                    <p className="mt-2 flex items-center gap-1.5 text-xs text-ivory/60">
+                      <CalendarDays className="size-3.5 text-gold-light" />
+                      Released{" "}
+                      {formatDate(`${ymd(current.releaseDate)}T00:00:00+05:30`)}
+                    </p>
+                  )}
+                </div>
+
+                {/* Poetic description */}
+                {current.caption && (
+                  <p className="text-sm sm:text-base leading-relaxed text-ivory/80 italic border-l-2 border-gold/40 pl-3.5 py-0.5">
+                    "{current.caption}"
+                  </p>
+                )}
+
+                {/* Platform Streaming Buttons & Details */}
+                <div className="pt-2 flex flex-wrap items-center gap-2">
+                  {current.links.slice(0, 5).map((l) => (
+                    <PlatformButton
+                      key={`${l.platform}-${l.url}`}
+                      platform={l.platform}
+                      url={l.url}
+                    />
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setOpen(current)}
+                    className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-gold bg-gold/15 px-4 py-2 text-xs font-semibold text-gold-light transition hover:bg-gold hover:text-night cursor-pointer shadow-md"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </AnimatePresence>
+        </div>
 
-          {/* Shelf */}
-          <div className="min-w-0">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-night">
-                {items.length} release{items.length === 1 ? "" : "s"}
+        {/* ========================================================================= */}
+        {/* INFINITE COLLECTION SHELF (Uncropped mini album sleeves)                 */}
+        {/* ========================================================================= */}
+        <div className="mt-12">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-bold text-night tracking-wide">
+                ALL RELEASES ({items.length})
               </p>
-              <div
-                className="flex items-center gap-2"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-              >
-                <button
-                  type="button"
-                  onClick={goToPrev}
-                  aria-label="Previous release"
-                  className="grid size-10 place-items-center rounded-full border border-gold/50 text-night transition hover:bg-night hover:text-gold-light cursor-pointer"
-                >
-                  <ChevronLeft className="size-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={goToNext}
-                  aria-label="Next release"
-                  className="grid size-10 place-items-center rounded-full border border-gold/50 text-night transition hover:bg-night hover:text-gold-light cursor-pointer"
-                >
-                  <ChevronRight className="size-5" />
-                </button>
-              </div>
+              <p className="text-xs text-muted-foreground hidden sm:block">
+                Auto-advances every few seconds · Tap any kalam to spotlight
+              </p>
             </div>
             <div
-              ref={shelf}
-              onScroll={handleScroll}
+              className="flex items-center gap-2"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
-              onTouchStart={() => setIsPaused(true)}
-              onTouchEnd={() => setIsPaused(false)}
-              className="flex snap-x snap-mandatory gap-4 overflow-x-auto pt-4 pb-6 [scrollbar-width:none]"
             >
-              {allCards.map(
-                ({ item: r, virtualIndex: vIdx, originalIndex: oIdx }) => {
-                  const active = vIdx === virtualIndex;
-                  return (
-                    <motion.button
-                      key={`${r.title}-${vIdx}`}
-                      type="button"
-                      onClick={() => goToIndex(vIdx)}
-                      whileHover={
-                        reduceMotion ? undefined : { y: -8, rotate: -1.5 }
-                      }
-                      whileTap={{ scale: 0.97 }}
-                      aria-pressed={active}
-                      className={cn(
-                        "arch group relative w-40 shrink-0 snap-center overflow-hidden border-2 bg-night text-left shadow-lg transition-all duration-300 sm:w-48 cursor-pointer",
-                        active
-                          ? "border-gold shadow-gold/40 ring-2 ring-gold/50 scale-[1.02]"
-                          : "border-transparent hover:border-gold/50 opacity-80 hover:opacity-100",
-                      )}
-                    >
-                      <div className="aspect-[3/4] overflow-hidden">
-                        <img
-                          src={r.posterPath}
-                          alt=""
-                          loading="lazy"
-                          draggable={false}
-                          className="size-full object-cover transition duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-night/95 via-night/10 to-transparent" />
+              <button
+                type="button"
+                onClick={goToPrev}
+                aria-label="Previous release"
+                className="grid size-10 place-items-center rounded-full border border-gold/50 bg-white/70 text-night shadow-sm transition hover:bg-night hover:text-gold-light cursor-pointer"
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={goToNext}
+                aria-label="Next release"
+                className="grid size-10 place-items-center rounded-full border border-gold/50 bg-white/70 text-night shadow-sm transition hover:bg-night hover:text-gold-light cursor-pointer"
+              >
+                <ChevronRight className="size-5" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={shelf}
+            onScroll={handleScroll}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto pt-2 pb-6 [scrollbar-width:none]"
+          >
+            {allCards.map(
+              ({ item: r, virtualIndex: vIdx, originalIndex: oIdx }) => {
+                const active = vIdx === virtualIndex;
+                return (
+                  <motion.button
+                    key={`${r.title}-${vIdx}`}
+                    type="button"
+                    onClick={() => goToIndex(vIdx)}
+                    whileHover={
+                      reduceMotion ? undefined : { y: -6, scale: 1.02 }
+                    }
+                    whileTap={{ scale: 0.97 }}
+                    aria-pressed={active}
+                    className={cn(
+                      "group relative w-48 sm:w-56 shrink-0 snap-center rounded-2xl border-2 bg-night text-left shadow-lg transition-all duration-300 p-2.5 cursor-pointer overflow-hidden",
+                      active
+                        ? "border-gold shadow-gold/30 ring-2 ring-gold/50 scale-[1.02] bg-night-2"
+                        : "border-gold/20 hover:border-gold/60 opacity-85 hover:opacity-100",
+                    )}
+                  >
+                    {/* Uncropped Artwork Container inside each shelf card */}
+                    <div className="relative w-full h-32 sm:h-38 rounded-xl bg-black/70 flex items-center justify-center overflow-hidden p-1">
+                      <img
+                        src={r.posterPath}
+                        alt=""
+                        loading="lazy"
+                        draggable={false}
+                        className="size-full object-contain transition duration-500 group-hover:scale-105"
+                      />
                       {oIdx === newest && (
-                        <span className="absolute top-6 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-night">
-                          <Music className="size-3" /> NEW
+                        <span className="absolute top-2 left-2 inline-flex items-center gap-0.5 rounded-full bg-gold px-2 py-0.5 text-[9px] font-bold text-night shadow">
+                          <Music className="size-2.5" /> NEW
                         </span>
                       )}
-                      <div className="absolute inset-x-0 bottom-0 p-3">
-                        <p className="line-clamp-2 font-display text-base leading-tight font-bold text-ivory">
-                          {r.title}
+                      <span className="absolute bottom-2 right-2 rounded bg-black/80 px-1.5 py-0.5 text-[9px] font-semibold text-gold-light border border-gold/20">
+                        #0{oIdx + 1}
+                      </span>
+                    </div>
+
+                    {/* Metadata below artwork */}
+                    <div className="mt-2.5 px-0.5">
+                      <p className="line-clamp-1 font-display text-sm sm:text-base font-bold text-ivory">
+                        {r.title}
+                      </p>
+                      {r.subtitle && (
+                        <p className="mt-0.5 truncate text-[10px] tracking-wider text-gold-light uppercase">
+                          {r.subtitle}
                         </p>
-                        {r.subtitle && (
-                          <p className="mt-0.5 truncate text-[10px] tracking-wider text-gold-light uppercase">
-                            {r.subtitle}
-                          </p>
-                        )}
-                      </div>
-                    </motion.button>
-                  );
-                },
-              )}
-            </div>
+                      )}
+                      {active && (
+                        <p className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-gold-light tracking-wider uppercase">
+                          <span className="size-1.5 rounded-full bg-gold animate-ping" />
+                          NOW PLAYING
+                        </p>
+                      )}
+                    </div>
+                  </motion.button>
+                );
+              },
+            )}
           </div>
         </div>
       </div>
