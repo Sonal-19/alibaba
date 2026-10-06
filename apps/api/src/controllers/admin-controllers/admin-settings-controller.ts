@@ -1,7 +1,13 @@
 import { eq } from "drizzle-orm";
 import Elysia, { t } from "elysia";
 import { db } from "$/db";
-import { adminsTable, galleryIcons, siteSettingsTable } from "$/db/schema";
+import {
+  adminsTable,
+  bookingButtonChannels,
+  bookingButtonRotations,
+  galleryIcons,
+  siteSettingsTable,
+} from "$/db/schema";
 import {
   storageService,
   type UploadFolder,
@@ -29,6 +35,12 @@ export const adminSettingsController = new Elysia({
           400,
           fail("Hero music must be a YouTube or YouTube Music link"),
         );
+      }
+      if (body.bookingButton) {
+        body.bookingButton.numbers = body.bookingButton.numbers.map((n) => ({
+          ...n,
+          number: n.number.replace(/\D/g, ""),
+        }));
       }
       const [row] = await db
         .update(siteSettingsTable)
@@ -77,6 +89,23 @@ export const adminSettingsController = new Elysia({
             views: t.String(),
             years: t.String(),
             albums: t.String(),
+          }),
+        ),
+        bookingButton: t.Optional(
+          t.Object({
+            enabled: t.Boolean(),
+            channel: tEnum(bookingButtonChannels),
+            label: t.String({ minLength: 1, maxLength: 40 }),
+            message: t.String({ maxLength: 500 }),
+            rotation: tEnum(bookingButtonRotations),
+            numbers: t.Array(
+              t.Object({
+                number: t.String({ pattern: "^\\+?[\\d\\s-]{8,20}$" }),
+                label: t.String({ maxLength: 60 }),
+                active: t.Boolean(),
+              }),
+              { maxItems: 10 },
+            ),
           }),
         ),
       }),

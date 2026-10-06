@@ -1,0 +1,2 @@
+CREATE TYPE "invoice_payment_method" AS ENUM('bank', 'upi', 'cash');--> statement-breakpoint
+ALTER TABLE "invoices" ADD COLUMN "payment_method" "invoice_payment_method" DEFAULT 'bank'::"invoice_payment_method" NOT NULL;

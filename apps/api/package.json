@@ -20,7 +20,8 @@
     "@elysiajs/cors": "^1.4.2",
     "drizzle-orm": "catalog:",
     "elysia": "catalog:",
-    "nodemailer": "^10.0.1"
+    "nodemailer": "^10.0.1",
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

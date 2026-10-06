@@ -1,0 +1,1 @@
+ALTER TABLE "site_settings" ADD COLUMN "booking_button" jsonb DEFAULT '{"enabled":true,"channel":"whatsapp","label":"Book a Show","message":"Sat Sri Akal 🙏 I want to book a show.","rotation":"first","numbers":[]}' NOT NULL;

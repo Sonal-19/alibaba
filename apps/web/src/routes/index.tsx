@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AboutSection } from "@/components/landing/about-section";
 import { BlogPreviewSection } from "@/components/landing/blog-preview-section";
+import { BookingFab } from "@/components/landing/booking-fab";
 import { BookingSection } from "@/components/landing/booking-section";
 import { ContactSection } from "@/components/landing/contact-section";
 import { HeroSection } from "@/components/landing/hero-section";
@@ -38,6 +39,7 @@ function HomePage() {
       <SocialFeedSection s={s} />
       <BlogPreviewSection />
       <ContactSection s={s} />
+      <BookingFab s={s} />
     </PublicLayout>
   );
 }

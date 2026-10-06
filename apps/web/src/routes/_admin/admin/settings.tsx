@@ -4,6 +4,7 @@ import { KeyRound, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/admin/admin-shell";
+import { BookingButtonCard } from "@/components/admin/booking-button-card";
 import { GalleryEditor } from "@/components/admin/gallery-editor";
 import {
   HeroMusicCard,
@@ -44,6 +45,11 @@ function SettingsPage() {
           ...body,
           // Cards without a photo would render as broken images.
           gallery: body.gallery.filter((g) => g.imagePath),
+          // Blank number rows would fail validation.
+          bookingButton: {
+            ...body.bookingButton,
+            numbers: body.bookingButton.numbers.filter((n) => n.number.trim()),
+          },
         }),
       );
     },
@@ -188,6 +194,12 @@ function SettingsPage() {
             </Field>
           </div>
         </Card>
+
+        <BookingButtonCard
+          value={f.bookingButton}
+          fallbackNumber={f.whatsappNumber}
+          onChange={(v) => set("bookingButton", v)}
+        />
 
         <Card className="gap-4 p-5">
           <h2 className="font-semibold text-night">Social & streaming links</h2>

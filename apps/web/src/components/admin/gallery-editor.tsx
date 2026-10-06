@@ -1,8 +1,8 @@
 import type { GalleryItem } from "@api/db/schema";
 import { ArrowDown, ArrowUp, Images, Plus, Trash2 } from "lucide-react";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
 import { GALLERY_ICONS } from "@/components/common/gallery-icons";
-import { NativeSelect } from "@/components/common/native-select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -121,21 +121,17 @@ export function GalleryEditor({
                 />
               </Field>
               <Field label="Icon">
-                <NativeSelect
+                <AppSelect
                   className="w-full"
                   value={it.icon}
-                  onChange={(e) =>
-                    update(i, {
-                      icon: e.target.value as GalleryItem["icon"],
-                    })
+                  onValueChange={(v) =>
+                    update(i, { icon: v as GalleryItem["icon"] })
                   }
-                >
-                  {ICON_KEYS.map((k) => (
-                    <option key={k} value={k}>
-                      {titleCase(k)}
-                    </option>
-                  ))}
-                </NativeSelect>
+                  options={ICON_KEYS.map((k) => ({
+                    value: k,
+                    label: titleCase(k),
+                  }))}
+                />
               </Field>
             </div>
             <Field label="Description">

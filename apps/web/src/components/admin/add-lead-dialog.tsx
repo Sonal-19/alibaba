@@ -3,17 +3,16 @@ import { useNavigate } from "@tanstack/react-router";
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
-import { NativeSelect } from "@/components/common/native-select";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/common/form-dialog";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { api, callMsg } from "@/lib/api";
 import { titleCase } from "@/lib/utils";
@@ -66,94 +65,97 @@ export function AddLeadDialog() {
           <UserPlus /> Add lead
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <FormDialogContent>
+        <FormDialogHeader>
           <DialogTitle>New lead</DialogTitle>
-        </DialogHeader>
-        <form
-          id="add-lead"
-          className="grid gap-4 sm:grid-cols-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            create.mutate();
-          }}
-        >
-          <Field label="Name" required>
-            <Input
-              required
-              minLength={2}
-              value={f.name}
-              onChange={(e) => setF({ ...f, name: e.target.value })}
-            />
-          </Field>
-          <Field label="Phone / WhatsApp" required>
-            <Input
-              required
-              minLength={10}
-              value={f.phone}
-              onChange={(e) => setF({ ...f, phone: e.target.value })}
-            />
-          </Field>
-          <Field label="Email">
-            <Input
-              type="email"
-              value={f.email}
-              onChange={(e) => setF({ ...f, email: e.target.value })}
-            />
-          </Field>
-          <Field label="City">
-            <Input
-              value={f.city}
-              onChange={(e) => setF({ ...f, city: e.target.value })}
-            />
-          </Field>
-          <Field label="Source">
-            <NativeSelect
-              className="w-full"
-              value={f.source}
-              onChange={(e) =>
-                setF({ ...f, source: e.target.value as LeadSource })
-              }
-            >
-              {LEAD_SOURCES.map((s) => (
-                <option key={s} value={s}>
-                  {titleCase(s)}
-                </option>
-              ))}
-            </NativeSelect>
-          </Field>
-          <Field label="Priority">
-            <NativeSelect
-              className="w-full"
-              value={f.priority}
-              onChange={(e) =>
-                setF({ ...f, priority: e.target.value as LeadPriority })
-              }
-            >
-              {LEAD_PRIORITIES.map((s) => (
-                <option key={s} value={s}>
-                  {titleCase(s)}
-                </option>
-              ))}
-            </NativeSelect>
-          </Field>
-          <Field
-            label="Tags"
-            hint="Comma separated, e.g. raagi, event"
-            className="sm:col-span-2"
+        </FormDialogHeader>
+        <FormDialogBody>
+          <form
+            id="add-lead"
+            className="grid gap-4 sm:grid-cols-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              create.mutate();
+            }}
           >
-            <Input
-              value={f.tags}
-              onChange={(e) => setF({ ...f, tags: e.target.value })}
-            />
-          </Field>
-        </form>
-        <DialogFooter>
+            <Field label="Name" required>
+              <Input
+                required
+                minLength={2}
+                value={f.name}
+                onChange={(e) => setF({ ...f, name: e.target.value })}
+              />
+            </Field>
+            <Field label="Phone / WhatsApp" required>
+              <Input
+                required
+                minLength={10}
+                value={f.phone}
+                onChange={(e) => setF({ ...f, phone: e.target.value })}
+              />
+            </Field>
+            <Field label="Email">
+              <Input
+                type="email"
+                value={f.email}
+                onChange={(e) => setF({ ...f, email: e.target.value })}
+              />
+            </Field>
+            <Field label="City">
+              <Input
+                value={f.city}
+                onChange={(e) => setF({ ...f, city: e.target.value })}
+              />
+            </Field>
+            <Field label="Source">
+              <AppSelect
+                className="w-full"
+                value={f.source}
+                onValueChange={(v) => setF({ ...f, source: v as LeadSource })}
+                options={LEAD_SOURCES.map((s) => ({
+                  value: s,
+                  label: titleCase(s),
+                }))}
+              />
+            </Field>
+            <Field label="Priority">
+              <AppSelect
+                className="w-full"
+                value={f.priority}
+                onValueChange={(v) =>
+                  setF({ ...f, priority: v as LeadPriority })
+                }
+                options={LEAD_PRIORITIES.map((s) => ({
+                  value: s,
+                  label: titleCase(s),
+                }))}
+              />
+            </Field>
+            <Field
+              label="Tags"
+              hint="Comma separated, e.g. raagi, event"
+              className="sm:col-span-2"
+            >
+              <Input
+                value={f.tags}
+                onChange={(e) => setF({ ...f, tags: e.target.value })}
+              />
+            </Field>
+          </form>
+        </FormDialogBody>
+        <FormDialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
           <Button type="submit" form="add-lead" disabled={create.isPending}>
             Create lead
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

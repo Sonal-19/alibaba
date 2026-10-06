@@ -14,8 +14,14 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/admin/admin-shell";
 import { Pill } from "@/components/admin/badges";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
-import { NativeSelect } from "@/components/common/native-select";
+import {
+  FormDialogBody,
+  FormDialogContent,
+  FormDialogFooter,
+  FormDialogHeader,
+} from "@/components/common/form-dialog";
 import { EmptyState, ErrorState, PageLoader } from "@/components/common/states";
 import {
   PlatformButton,
@@ -23,13 +29,7 @@ import {
 } from "@/components/landing/release-carousel";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -328,207 +328,207 @@ function ReleaseDialog({
 
   return (
     <Dialog open={!!draft} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-3xl">
-        <DialogHeader>
+      <FormDialogContent className="sm:max-w-3xl">
+        <FormDialogHeader>
           <DialogTitle>{d?.id ? "Edit release" : "New release"}</DialogTitle>
-        </DialogHeader>
-        {d && (
-          <div className="grid gap-6 md:grid-cols-[1fr_240px]">
-            <div className="space-y-4">
-              <Field label="Poster shape">
-                <div className="flex gap-2">
-                  {(
-                    [
-                      ["square", "Square · album art (1:1)"],
-                      ["wide", "Wide · video thumbnail (16:9)"],
-                    ] as const
-                  ).map(([v, label]) => (
-                    <button
-                      key={v}
-                      type="button"
-                      onClick={() => setD({ ...d, aspect: v })}
-                      className={cn(
-                        "flex-1 rounded-lg border-2 px-3 py-2 text-left text-xs font-medium transition sm:text-sm",
-                        d.aspect === v
-                          ? "border-primary bg-accent/50"
-                          : "border-border hover:border-primary/50",
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </Field>
-              <Field
-                label="Poster image"
-                required
-                hint="JPG/PNG/WebP. Square 1000×1000 or wide 1280×720 works best."
-              >
-                <ImageUpload
-                  folder="releases"
-                  aspect={
-                    d.aspect === "wide"
-                      ? "aspect-video"
-                      : "aspect-square max-w-60"
-                  }
-                  value={d.posterPath}
-                  onChange={(p) => setD({ ...d, posterPath: p })}
-                />
-              </Field>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Title" required>
-                  <Input
-                    value={d.title}
-                    maxLength={160}
-                    placeholder="e.g. Satgur Tumre Kaaj Saware"
-                    onChange={(e) => setD({ ...d, title: e.target.value })}
-                  />
-                </Field>
-                <Field label="Label" hint="Small line above the title.">
-                  <Input
-                    value={d.subtitle}
-                    maxLength={120}
-                    placeholder="e.g. New Album · 2026"
-                    onChange={(e) => setD({ ...d, subtitle: e.target.value })}
-                  />
-                </Field>
-              </div>
-              <Field label="Caption / description">
-                <Textarea
-                  rows={3}
-                  maxLength={600}
-                  value={d.caption}
-                  onChange={(e) => setD({ ...d, caption: e.target.value })}
-                />
-              </Field>
-              <Field label="Listen / watch links">
-                <div className="space-y-2">
-                  {d.links.map((l, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-col gap-2 rounded-lg border p-2 sm:flex-row sm:items-center sm:border-0 sm:p-0"
-                    >
-                      <NativeSelect
-                        className="w-full sm:w-44"
-                        value={l.platform}
-                        onChange={(e) =>
-                          setLink(i, {
-                            platform: e.target.value as ReleasePlatform,
-                          })
-                        }
+        </FormDialogHeader>
+        <FormDialogBody>
+          {d && (
+            <div className="grid gap-6 md:grid-cols-[1fr_240px]">
+              <div className="space-y-4">
+                <Field label="Poster shape">
+                  <div className="flex gap-2">
+                    {(
+                      [
+                        ["square", "Square · album art (1:1)"],
+                        ["wide", "Wide · video thumbnail (16:9)"],
+                      ] as const
+                    ).map(([v, label]) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setD({ ...d, aspect: v })}
+                        className={cn(
+                          "flex-1 rounded-lg border-2 px-3 py-2 text-left text-xs font-medium transition sm:text-sm",
+                          d.aspect === v
+                            ? "border-primary bg-accent/50"
+                            : "border-border hover:border-primary/50",
+                        )}
                       >
-                        {RELEASE_PLATFORMS.map((p) => (
-                          <option key={p} value={p}>
-                            {PLATFORM_META[p].label}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                      <div className="flex flex-1 gap-2">
-                        <Input
-                          type="url"
-                          placeholder="https://"
-                          value={l.url}
-                          onChange={(e) => setLink(i, { url: e.target.value })}
-                        />
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="ghost"
-                          aria-label="Remove link"
-                          onClick={() =>
-                            setD({
-                              ...d,
-                              links: d.links.filter((_, j) => j !== i),
-                            })
-                          }
-                        >
-                          <X />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={d.links.length >= 10}
-                    onClick={() =>
-                      setD({
-                        ...d,
-                        links: [...d.links, { platform: "spotify", url: "" }],
-                      })
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </Field>
+                <Field
+                  label="Poster image"
+                  required
+                  hint="JPG/PNG/WebP. Square 1000×1000 or wide 1280×720 works best."
+                >
+                  <ImageUpload
+                    folder="releases"
+                    aspect={
+                      d.aspect === "wide"
+                        ? "aspect-video"
+                        : "aspect-square max-w-60"
                     }
-                  >
-                    <Plus /> Add link
-                  </Button>
-                </div>
-              </Field>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Release date">
-                  <Input
-                    type="date"
-                    value={d.releaseDate}
-                    onChange={(e) =>
-                      setD({ ...d, releaseDate: e.target.value })
-                    }
+                    value={d.posterPath}
+                    onChange={(p) => setD({ ...d, posterPath: p })}
                   />
                 </Field>
-                <label className="flex items-center gap-2 self-end pb-2 text-sm">
-                  <Switch
-                    checked={d.isActive}
-                    onCheckedChange={(v) => setD({ ...d, isActive: v })}
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Title" required>
+                    <Input
+                      value={d.title}
+                      maxLength={160}
+                      placeholder="e.g. Satgur Tumre Kaaj Saware"
+                      onChange={(e) => setD({ ...d, title: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Label" hint="Small line above the title.">
+                    <Input
+                      value={d.subtitle}
+                      maxLength={120}
+                      placeholder="e.g. New Album · 2026"
+                      onChange={(e) => setD({ ...d, subtitle: e.target.value })}
+                    />
+                  </Field>
+                </div>
+                <Field label="Caption / description">
+                  <Textarea
+                    rows={3}
+                    maxLength={600}
+                    value={d.caption}
+                    onChange={(e) => setD({ ...d, caption: e.target.value })}
                   />
-                  Show on home page
-                </label>
+                </Field>
+                <Field label="Listen / watch links">
+                  <div className="space-y-2">
+                    {d.links.map((l, i) => (
+                      <div
+                        key={i}
+                        className="flex flex-col gap-2 rounded-lg border p-2 sm:flex-row sm:items-center sm:border-0 sm:p-0"
+                      >
+                        <AppSelect
+                          className="w-full sm:w-44"
+                          value={l.platform}
+                          onValueChange={(v) =>
+                            setLink(i, { platform: v as ReleasePlatform })
+                          }
+                          options={RELEASE_PLATFORMS.map((p) => ({
+                            value: p,
+                            label: PLATFORM_META[p].label,
+                          }))}
+                        />
+                        <div className="flex flex-1 gap-2">
+                          <Input
+                            type="url"
+                            placeholder="https://"
+                            value={l.url}
+                            onChange={(e) =>
+                              setLink(i, { url: e.target.value })
+                            }
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            aria-label="Remove link"
+                            onClick={() =>
+                              setD({
+                                ...d,
+                                links: d.links.filter((_, j) => j !== i),
+                              })
+                            }
+                          >
+                            <X />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={d.links.length >= 10}
+                      onClick={() =>
+                        setD({
+                          ...d,
+                          links: [...d.links, { platform: "spotify", url: "" }],
+                        })
+                      }
+                    >
+                      <Plus /> Add link
+                    </Button>
+                  </div>
+                </Field>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Release date">
+                    <Input
+                      type="date"
+                      value={d.releaseDate}
+                      onChange={(e) =>
+                        setD({ ...d, releaseDate: e.target.value })
+                      }
+                    />
+                  </Field>
+                  <label className="flex items-center gap-2 self-end pb-2 text-sm">
+                    <Switch
+                      checked={d.isActive}
+                      onCheckedChange={(v) => setD({ ...d, isActive: v })}
+                    />
+                    Show on home page
+                  </label>
+                </div>
               </div>
-            </div>
 
-            {/* live preview */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Preview</p>
-              <div className="grid place-items-center overflow-hidden rounded-xl bg-[#070b18] p-4">
-                {d.posterPath ? (
-                  <ReleaseCard
-                    className="!h-auto w-full"
-                    r={{
-                      ...d,
-                      posterPath: d.posterPath,
-                      links: d.links.filter((l) => l.url.trim()),
-                    }}
-                    isNew
-                  />
-                ) : (
-                  <p className="py-16 text-center text-xs text-ivory/60">
-                    Upload a poster to preview
-                  </p>
+              {/* live preview */}
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Preview</p>
+                <div className="grid place-items-center overflow-hidden rounded-xl bg-[#070b18] p-4">
+                  {d.posterPath ? (
+                    <ReleaseCard
+                      className="!h-auto w-full"
+                      r={{
+                        ...d,
+                        posterPath: d.posterPath,
+                        links: d.links.filter((l) => l.url.trim()),
+                      }}
+                      isNew
+                    />
+                  ) : (
+                    <p className="py-16 text-center text-xs text-ivory/60">
+                      Upload a poster to preview
+                    </p>
+                  )}
+                </div>
+                {d.links.some((l) => l.url.trim()) && (
+                  <div className="space-y-1.5 rounded-xl bg-[#0b1229] p-3">
+                    {d.links
+                      .filter((l) => l.url.trim())
+                      .map((l, i) => (
+                        <PlatformButton
+                          key={i}
+                          platform={l.platform}
+                          url={l.url}
+                          size="lg"
+                        />
+                      ))}
+                  </div>
                 )}
               </div>
-              {d.links.some((l) => l.url.trim()) && (
-                <div className="space-y-1.5 rounded-xl bg-[#0b1229] p-3">
-                  {d.links
-                    .filter((l) => l.url.trim())
-                    .map((l, i) => (
-                      <PlatformButton
-                        key={i}
-                        platform={l.platform}
-                        url={l.url}
-                        size="lg"
-                      />
-                    ))}
-                </div>
-              )}
             </div>
-          </div>
-        )}
-        <DialogFooter>
+          )}
+        </FormDialogBody>
+        <FormDialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={submit} disabled={save.isPending}>
             Save release
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </FormDialogFooter>
+      </FormDialogContent>
     </Dialog>
   );
 }

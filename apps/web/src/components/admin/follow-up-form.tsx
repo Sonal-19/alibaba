@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CalendarPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
-import { NativeSelect } from "@/components/common/native-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api, callMsg } from "@/lib/api";
@@ -61,17 +61,15 @@ export function FollowUpForm({
         />
       </Field>
       <Field label="Type">
-        <NativeSelect
+        <AppSelect
           className="w-full"
           value={type}
-          onChange={(e) => setType(e.target.value as FollowUpType)}
-        >
-          {FOLLOW_UP_TYPES.filter((t) => t !== "program").map((t) => (
-            <option key={t} value={t}>
-              {titleCase(t)}
-            </option>
-          ))}
-        </NativeSelect>
+          onValueChange={(v) => setType(v as FollowUpType)}
+          options={FOLLOW_UP_TYPES.filter((t) => t !== "program").map((t) => ({
+            value: t,
+            label: titleCase(t),
+          }))}
+        />
       </Field>
       <Field label="What to do" className="sm:col-span-2">
         <Input

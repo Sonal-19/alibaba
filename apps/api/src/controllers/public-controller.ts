@@ -35,7 +35,15 @@ export const publicController = new Elysia({
   .get("/site-settings", async ({ status }) => {
     const [row] = await db.select().from(siteSettingsTable).limit(1);
     if (!row) return status(404, fail("Site settings missing"));
-    return ok(row);
+    // Visitors only need the active numbers, not the admin's notes or spares.
+    const { numbers, ...bookingButton } = row.bookingButton;
+    return ok({
+      ...row,
+      bookingButton: {
+        ...bookingButton,
+        numbers: numbers.filter((n) => n.active).map((n) => n.number),
+      },
+    });
   })
   .get("/releases", async () => {
     const rows = await db

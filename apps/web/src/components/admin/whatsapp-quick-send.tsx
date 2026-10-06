@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FaWhatsapp } from "react-icons/fa6";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
-import { NativeSelect } from "@/components/common/native-select";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -61,13 +61,16 @@ export function WhatsappQuickSend({
         </DialogHeader>
         <div className="space-y-4">
           <Field label="Template">
-            <NativeSelect
+            <AppSelect
               className="w-full"
-              defaultValue=""
-              onChange={(e) => {
-                const t = templates?.find(
-                  (x) => x.id === Number(e.target.value),
-                );
+              value=""
+              placeholder="Choose a template…"
+              options={(templates ?? []).map((t) => ({
+                value: t.id,
+                label: t.name,
+              }))}
+              onValueChange={(v) => {
+                const t = templates?.find((x) => x.id === Number(v));
                 if (t)
                   setText(
                     renderTemplate(t.body, {
@@ -76,14 +79,7 @@ export function WhatsappQuickSend({
                     }),
                   );
               }}
-            >
-              <option value="">Choose a template…</option>
-              {templates?.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </NativeSelect>
+            />
           </Field>
           <Field label="Link for {{link}}">
             <Input value={link} onChange={(e) => setLink(e.target.value)} />

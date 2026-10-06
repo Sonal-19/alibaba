@@ -20,8 +20,8 @@ import { useState } from "react";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa6";
 import { toast } from "sonner";
 import { Pill } from "@/components/admin/badges";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
-import { NativeSelect } from "@/components/common/native-select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -280,47 +280,46 @@ function YoutubeCard({
             htmlFor="yt-every"
             hint="Between checks the saved videos are used"
           >
-            <NativeSelect
+            <AppSelect
               id="yt-every"
               className="w-full"
               value={feed.syncEveryHours}
               disabled={saving || !feed.autoSync}
-              onChange={(e) =>
-                onPatchFeed({ syncEveryHours: Number(e.target.value) })
-              }
-            >
-              {withCurrent(SYNC_HOURS, feed.syncEveryHours).map((h) => (
-                <option key={h} value={h}>
-                  {h === 1
-                    ? "Every hour"
-                    : h === 24
-                      ? "Once a day"
-                      : `Every ${h} hours`}
-                </option>
-              ))}
-            </NativeSelect>
+              onValueChange={(v) => onPatchFeed({ syncEveryHours: Number(v) })}
+              options={withCurrent(SYNC_HOURS, feed.syncEveryHours).map(
+                (h) => ({
+                  value: h,
+                  label:
+                    h === 1
+                      ? "Every hour"
+                      : h === 24
+                        ? "Once a day"
+                        : `Every ${h} hours`,
+                }),
+              )}
+            />
           </Field>
           <Field
             label="Order on the website"
             htmlFor="yt-arrange"
             hint="Pinned videos always come first"
           >
-            <NativeSelect
+            <AppSelect
               id="yt-arrange"
               className="w-full"
               value={feed.arrangement}
               disabled={saving}
-              onChange={(e) =>
-                onPatchFeed({
-                  arrangement: e.target.value as FeedArrangement,
-                })
+              onValueChange={(v) =>
+                onPatchFeed({ arrangement: v as FeedArrangement })
               }
-            >
-              <option value="newest">Newest first, all channels mixed</option>
-              <option value="balanced">
-                Channels take turns, in list order
-              </option>
-            </NativeSelect>
+              options={[
+                { value: "newest", label: "Newest first, all channels mixed" },
+                {
+                  value: "balanced",
+                  label: "Channels take turns, in list order",
+                },
+              ]}
+            />
           </Field>
           {feed.lastSyncError && (
             <p className="flex items-start gap-1.5 text-xs text-destructive sm:col-span-3">
@@ -451,18 +450,16 @@ function ChannelRow({
           </div>
         </div>
         <Field label="Keep" htmlFor={`yt-size-${c.id}`}>
-          <NativeSelect
+          <AppSelect
             id={`yt-size-${c.id}`}
             value={c.maxVideos}
             disabled={busy}
-            onChange={(e) => onPatch({ maxVideos: Number(e.target.value) })}
-          >
-            {withCurrent(CHANNEL_SIZES, c.maxVideos).map((n) => (
-              <option key={n} value={n}>
-                Latest {n}
-              </option>
-            ))}
-          </NativeSelect>
+            onValueChange={(v) => onPatch({ maxVideos: Number(v) })}
+            options={withCurrent(CHANNEL_SIZES, c.maxVideos).map((n) => ({
+              value: n,
+              label: `Latest ${n}`,
+            }))}
+          />
         </Field>
       </div>
 
@@ -595,17 +592,15 @@ function AddChannel({ onChanged }: { onChanged: () => void }) {
               </div>
             </div>
             <Field label="Keep" htmlFor="yt-new-size">
-              <NativeSelect
+              <AppSelect
                 id="yt-new-size"
                 value={maxVideos}
-                onChange={(e) => setMaxVideos(Number(e.target.value))}
-              >
-                {CHANNEL_SIZES.map((n) => (
-                  <option key={n} value={n}>
-                    Latest {n}
-                  </option>
-                ))}
-              </NativeSelect>
+                onValueChange={(v) => setMaxVideos(Number(v))}
+                options={CHANNEL_SIZES.map((n) => ({
+                  value: n,
+                  label: `Latest ${n}`,
+                }))}
+              />
             </Field>
           </div>
           {sample.length === 0 ? (

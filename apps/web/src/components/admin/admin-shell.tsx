@@ -3,6 +3,7 @@ import {
   CalendarDays,
   Disc3,
   ExternalLink,
+  FileText,
   HandHeart,
   Inbox,
   LayoutDashboard,
@@ -35,6 +36,7 @@ const NAV = [
         icon: HandHeart,
       },
       { to: "/admin/queries", label: "Queries", icon: Inbox },
+      { to: "/admin/invoices", label: "Invoices", icon: FileText },
     ],
   },
   {

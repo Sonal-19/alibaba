@@ -25,6 +25,44 @@ export type SiteStats = {
   albums: string;
 };
 
+/** Where the floating "Book a Show" button sends visitors. Only WhatsApp for
+ * now; new channels (email, call…) get added here and in the web renderer. */
+export const bookingButtonChannels = ["whatsapp"] as const;
+export type BookingButtonChannel = (typeof bookingButtonChannels)[number];
+
+export const bookingButtonRotations = ["first", "random"] as const;
+export type BookingButtonRotation = (typeof bookingButtonRotations)[number];
+
+export type BookingButtonNumber = {
+  /** Digits with country code, e.g. 919876543210. */
+  number: string;
+  /** Admin-only note, e.g. "Manager - Amrik". */
+  label: string;
+  active: boolean;
+};
+
+/** Floating "Book a Show" button on the landing page. */
+export type BookingButtonSettings = {
+  enabled: boolean;
+  channel: BookingButtonChannel;
+  label: string;
+  /** Pre-filled message the visitor only has to send. */
+  message: string;
+  /** With several active numbers: always the first, or a random one per visit. */
+  rotation: BookingButtonRotation;
+  /** Empty → falls back to the main WhatsApp number. */
+  numbers: BookingButtonNumber[];
+};
+
+export const bookingButtonDefaults: BookingButtonSettings = {
+  enabled: true,
+  channel: "whatsapp",
+  label: "Book a Show",
+  message: "Sat Sri Akal 🙏 I want to book a show.",
+  rotation: "first",
+  numbers: [],
+};
+
 /** Single-row table (id = 1) holding everything the public site renders
  * that the admin can edit without a deploy. */
 export const siteSettingsTable = pgTable("site_settings", (pg) => ({
@@ -57,6 +95,11 @@ export const siteSettingsTable = pgTable("site_settings", (pg) => ({
   appleMusicUrl: pg.text("apple_music_url"),
   whatsappChannelUrl: pg.text("whatsapp_channel_url"),
   stats: pg.jsonb().$type<SiteStats>().notNull(),
+  bookingButton: pg
+    .jsonb("booking_button")
+    .$type<BookingButtonSettings>()
+    .notNull()
+    .default(bookingButtonDefaults),
   updatedAt: pg
     .timestamp("updated_at", { withTimezone: true })
     .defaultNow()

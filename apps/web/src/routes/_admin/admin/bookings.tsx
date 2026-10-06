@@ -16,8 +16,8 @@ import { FaWhatsapp } from "react-icons/fa6";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/admin/admin-shell";
 import { Pill, SHOW_STATUS_TONE, StatusPill } from "@/components/admin/badges";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
-import { NativeSelect } from "@/components/common/native-select";
 import {
   EmptyState,
   ErrorState,
@@ -143,27 +143,22 @@ function BookingsPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <NativeSelect
-            className="sm:w-56"
+          <AppSelect
+            className="w-full sm:w-56"
             value={eventType ?? ""}
-            onChange={(e) =>
+            onValueChange={(v) =>
               navigate({
                 search: (p) => ({
                   ...p,
-                  eventType: (e.target.value || undefined) as
-                    | ShowEventType
-                    | undefined,
+                  eventType: (v || undefined) as ShowEventType | undefined,
                 }),
               })
             }
-          >
-            <option value="">All events</option>
-            {SHOW_EVENT_TYPES.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </NativeSelect>
+            options={[
+              { value: "", label: "All events" },
+              ...SHOW_EVENT_TYPES.map(([v, l]) => ({ value: v, label: l })),
+            ]}
+          />
         </div>
         <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
           <Button
@@ -487,17 +482,15 @@ function BookingDialog({ id, onClose }: { id?: number; onClose: () => void }) {
                     />
                   </Field>
                   <Field label="Hours">
-                    <NativeSelect
+                    <AppSelect
                       className="w-full"
                       value={hours ?? b.durationHours}
-                      onChange={(e) => setHours(Number(e.target.value))}
-                    >
-                      {[1, 2, 3, 4, 5, 6, 8, 10, 12].map((h) => (
-                        <option key={h} value={h}>
-                          {h}
-                        </option>
-                      ))}
-                    </NativeSelect>
+                      onValueChange={(v) => setHours(Number(v))}
+                      options={[1, 2, 3, 4, 5, 6, 8, 10, 12].map((h) => ({
+                        value: h,
+                        label: h,
+                      }))}
+                    />
                   </Field>
                 </div>
               )}

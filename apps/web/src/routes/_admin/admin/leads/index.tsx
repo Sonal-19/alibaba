@@ -30,7 +30,7 @@ import {
   type LeadSource,
   type LeadStatus,
 } from "@/components/admin/lead-constants";
-import { NativeSelect } from "@/components/common/native-select";
+import { AppSelect } from "@/components/common/app-select";
 import { EmptyState, ErrorState, PageLoader } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -158,63 +158,54 @@ function LeadsPage() {
             onChange={(e) => setText(e.target.value)}
           />
         </div>
-        <NativeSelect
+        <AppSelect
           value={q.status ?? ""}
-          onChange={(e) =>
+          onValueChange={(v) =>
             navigate({
               search: (p) => ({
                 ...p,
-                status: (e.target.value || undefined) as LeadStatus | undefined,
+                status: (v || undefined) as LeadStatus | undefined,
                 page: undefined,
               }),
             })
           }
-        >
-          <option value="">All statuses</option>
-          {LEAD_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {titleCase(s)}
-            </option>
-          ))}
-        </NativeSelect>
-        <NativeSelect
+          options={[
+            { value: "", label: "All statuses" },
+            ...LEAD_STATUSES.map((s) => ({ value: s, label: titleCase(s) })),
+          ]}
+        />
+        <AppSelect
           value={q.source ?? ""}
-          onChange={(e) =>
+          onValueChange={(v) =>
             navigate({
               search: (p) => ({
                 ...p,
-                source: (e.target.value || undefined) as LeadSource | undefined,
+                source: (v || undefined) as LeadSource | undefined,
                 page: undefined,
               }),
             })
           }
-        >
-          <option value="">All sources</option>
-          {LEAD_SOURCES.map((s) => (
-            <option key={s} value={s}>
-              {titleCase(s)}
-            </option>
-          ))}
-        </NativeSelect>
-        <NativeSelect
+          options={[
+            { value: "", label: "All sources" },
+            ...LEAD_SOURCES.map((s) => ({ value: s, label: titleCase(s) })),
+          ]}
+        />
+        <AppSelect
           value={q.tag ?? ""}
-          onChange={(e) =>
+          onValueChange={(v) =>
             navigate({
               search: (p) => ({
                 ...p,
-                tag: e.target.value || undefined,
+                tag: v || undefined,
                 page: undefined,
               }),
             })
           }
-        >
-          <option value="">All tags</option>
-          {tags?.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </NativeSelect>
+          options={[
+            { value: "", label: "All tags" },
+            ...(tags ?? []).map((t) => ({ value: t, label: t })),
+          ]}
+        />
         <div className="flex rounded-md border p-0.5">
           <Button
             size="sm"

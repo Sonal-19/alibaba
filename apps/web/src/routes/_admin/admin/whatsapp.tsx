@@ -24,8 +24,8 @@ import {
   type LeadStatus,
 } from "@/components/admin/lead-constants";
 import { LeadPicker } from "@/components/admin/lead-picker";
+import { AppSelect } from "@/components/common/app-select";
 import { Field } from "@/components/common/field";
-import { NativeSelect } from "@/components/common/native-select";
 import { EmptyState, PageLoader, Spinner } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -314,51 +314,40 @@ function ListMembers({
       )}
       <div className="flex flex-wrap items-end gap-2 rounded-lg bg-muted/50 p-3">
         <Filter className="mb-2 size-4 text-muted-foreground" />
-        <NativeSelect
+        <AppSelect
           value={filter.status ?? ""}
-          onChange={(e) =>
+          onValueChange={(v) =>
             setFilter({
               ...filter,
-              status: (e.target.value || undefined) as LeadStatus | undefined,
+              status: (v || undefined) as LeadStatus | undefined,
             })
           }
-        >
-          <option value="">Any status</option>
-          {LEAD_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {titleCase(s)}
-            </option>
-          ))}
-        </NativeSelect>
-        <NativeSelect
+          options={[
+            { value: "", label: "Any status" },
+            ...LEAD_STATUSES.map((s) => ({ value: s, label: titleCase(s) })),
+          ]}
+        />
+        <AppSelect
           value={filter.source ?? ""}
-          onChange={(e) =>
+          onValueChange={(v) =>
             setFilter({
               ...filter,
-              source: (e.target.value || undefined) as LeadSource | undefined,
+              source: (v || undefined) as LeadSource | undefined,
             })
           }
-        >
-          <option value="">Any source</option>
-          {LEAD_SOURCES.map((s) => (
-            <option key={s} value={s}>
-              {titleCase(s)}
-            </option>
-          ))}
-        </NativeSelect>
-        <NativeSelect
+          options={[
+            { value: "", label: "Any source" },
+            ...LEAD_SOURCES.map((s) => ({ value: s, label: titleCase(s) })),
+          ]}
+        />
+        <AppSelect
           value={filter.tag ?? ""}
-          onChange={(e) =>
-            setFilter({ ...filter, tag: e.target.value || undefined })
-          }
-        >
-          <option value="">Any tag</option>
-          {tags?.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </NativeSelect>
+          onValueChange={(v) => setFilter({ ...filter, tag: v || undefined })}
+          options={[
+            { value: "", label: "Any tag" },
+            ...(tags ?? []).map((t) => ({ value: t, label: t })),
+          ]}
+        />
         <Button
           size="sm"
           onClick={() => add.mutate({ filter })}
@@ -511,20 +500,18 @@ function TemplatesTab() {
                 />
               </Field>
               <Field label="Category">
-                <NativeSelect
+                <AppSelect
                   className="w-full"
                   value={edit.category}
-                  onChange={(e) =>
-                    setEdit({
-                      ...edit,
-                      category: e.target.value as Tpl["category"],
-                    })
+                  onValueChange={(v) =>
+                    setEdit({ ...edit, category: v as Tpl["category"] })
                   }
-                >
-                  <option value="broadcast">Broadcast</option>
-                  <option value="followup">Follow-up</option>
-                  <option value="share">Share content</option>
-                </NativeSelect>
+                  options={[
+                    { value: "broadcast", label: "Broadcast" },
+                    { value: "followup", label: "Follow-up" },
+                    { value: "share", label: "Share content" },
+                  ]}
+                />
               </Field>
               <Field label="Message">
                 <Textarea
@@ -598,27 +585,30 @@ function SendTab({ onCreated }: { onCreated: (id: number) => void }) {
       <Card className="gap-4 p-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Send to list" required>
-            <NativeSelect
+            <AppSelect
               className="w-full"
               value={listId}
-              onChange={(e) =>
-                setListId(e.target.value ? Number(e.target.value) : "")
-              }
-            >
-              <option value="">Choose a list…</option>
-              {lists?.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name} ({l.members})
-                </option>
-              ))}
-            </NativeSelect>
+              placeholder="Choose a list…"
+              onValueChange={(v) => setListId(v ? Number(v) : "")}
+              options={(lists ?? []).map((l) => ({
+                value: l.id,
+                label: `${l.name} (${l.members})`,
+              }))}
+            />
           </Field>
           <Field label="Template">
-            <NativeSelect
+            <AppSelect
               className="w-full"
               value={templateId}
-              onChange={(e) => {
-                const id = e.target.value ? Number(e.target.value) : "";
+              options={[
+                { value: "", label: "Write your own…" },
+                ...(templates ?? []).map((t) => ({
+                  value: t.id,
+                  label: t.name,
+                })),
+              ]}
+              onValueChange={(v) => {
+                const id = v ? Number(v) : "";
                 setTemplateId(id);
                 const t = templates?.find((x) => x.id === id);
                 if (t) {
@@ -626,32 +616,23 @@ function SendTab({ onCreated }: { onCreated: (id: number) => void }) {
                   if (!title) setTitle(t.name);
                 }
               }}
-            >
-              <option value="">Write your own…</option>
-              {templates?.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </NativeSelect>
+            />
           </Field>
         </div>
         <Field
           label="Share content ({{link}})"
           hint="Pick a blog post, social post or the Book a Show page, or paste any URL."
         >
-          <NativeSelect
+          <AppSelect
             className="w-full"
             value=""
-            onChange={(e) => e.target.value && setLink(e.target.value)}
-          >
-            <option value="">Pick content to share…</option>
-            {shareables?.map((s) => (
-              <option key={s.url} value={s.url}>
-                {s.label}
-              </option>
-            ))}
-          </NativeSelect>
+            placeholder="Pick content to share…"
+            onValueChange={(v) => v && setLink(v)}
+            options={(shareables ?? []).map((s) => ({
+              value: s.url,
+              label: s.label,
+            }))}
+          />
           <Input
             className="mt-2"
             placeholder="https://"
@@ -917,31 +898,27 @@ function ChannelTab() {
           WhatsApp doesn't allow posting to channels via API. Compose here,
           copy, then paste in your channel.
         </p>
-        <NativeSelect
+        <AppSelect
           value=""
-          onChange={(e) => {
-            const t = templates?.find((x) => x.id === Number(e.target.value));
+          placeholder="Start from a template…"
+          onValueChange={(v) => {
+            const t = templates?.find((x) => x.id === Number(v));
             if (t) setText(t.body);
           }}
-        >
-          <option value="">Start from a template…</option>
-          {templates?.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </NativeSelect>
-        <NativeSelect
+          options={(templates ?? []).map((t) => ({
+            value: t.id,
+            label: t.name,
+          }))}
+        />
+        <AppSelect
           value=""
-          onChange={(e) => e.target.value && setLink(e.target.value)}
-        >
-          <option value="">Attach content link…</option>
-          {shareables?.map((sh) => (
-            <option key={sh.url} value={sh.url}>
-              {sh.label}
-            </option>
-          ))}
-        </NativeSelect>
+          placeholder="Attach content link…"
+          onValueChange={(v) => v && setLink(v)}
+          options={(shareables ?? []).map((sh) => ({
+            value: sh.url,
+            label: sh.label,
+          }))}
+        />
         <Textarea
           rows={6}
           value={text}

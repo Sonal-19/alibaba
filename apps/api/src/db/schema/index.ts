@@ -1,5 +1,6 @@
 export * from "./auth/admins.sql";
 export * from "./auth/auths.sql";
+export * from "./billing/invoices.sql";
 export * from "./bookings/show-bookings.sql";
 export * from "./content/blog-posts.sql";
 export * from "./content/releases.sql";

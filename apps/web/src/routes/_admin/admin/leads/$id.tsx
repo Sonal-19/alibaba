@@ -30,7 +30,7 @@ import {
   type LeadStatus,
 } from "@/components/admin/lead-constants";
 import { WhatsappQuickSend } from "@/components/admin/whatsapp-quick-send";
-import { NativeSelect } from "@/components/common/native-select";
+import { AppSelect } from "@/components/common/app-select";
 import { ErrorState, PageLoader } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -185,35 +185,31 @@ function LeadDetail() {
             <h2 className="font-semibold text-night">Pipeline</h2>
             <label className="space-y-1 text-sm">
               <span className="text-muted-foreground">Status</span>
-              <NativeSelect
+              <AppSelect
                 className="w-full"
                 value={lead.status}
-                onChange={(e) =>
-                  update.mutate({ status: e.target.value as LeadStatus })
+                onValueChange={(v) =>
+                  update.mutate({ status: v as LeadStatus })
                 }
-              >
-                {LEAD_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {titleCase(s)}
-                  </option>
-                ))}
-              </NativeSelect>
+                options={LEAD_STATUSES.map((s) => ({
+                  value: s,
+                  label: titleCase(s),
+                }))}
+              />
             </label>
             <label className="space-y-1 text-sm">
               <span className="text-muted-foreground">Priority</span>
-              <NativeSelect
+              <AppSelect
                 className="w-full"
                 value={lead.priority}
-                onChange={(e) =>
-                  update.mutate({ priority: e.target.value as LeadPriority })
+                onValueChange={(v) =>
+                  update.mutate({ priority: v as LeadPriority })
                 }
-              >
-                {LEAD_PRIORITIES.map((s) => (
-                  <option key={s} value={s}>
-                    {titleCase(s)}
-                  </option>
-                ))}
-              </NativeSelect>
+                options={LEAD_PRIORITIES.map((s) => ({
+                  value: s,
+                  label: titleCase(s),
+                }))}
+              />
             </label>
             <div className="space-y-1 text-sm">
               <span className="text-muted-foreground">Tags</span>
