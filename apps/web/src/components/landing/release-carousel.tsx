@@ -23,7 +23,7 @@ import { cn, formatDate, ymd } from "@/lib/utils";
 export const releasesQuery = queryOptions({
   queryKey: ["public", "releases"] as const,
   queryFn: () => call(api.public.releases.get()),
-  staleTime: 5 * 60 * 1000,
+  staleTime: 2 * 60 * 1000,
 });
 
 export type ReleaseCardData = {

@@ -179,7 +179,7 @@ function CalendarPage() {
         }
       />
       <Card className="gap-0 overflow-hidden p-0">
-        <div className="flex items-center justify-between border-b px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-3 sm:px-4">
           <div className="flex items-center gap-1">
             <Button
               size="icon-sm"
@@ -205,13 +205,13 @@ function CalendarPage() {
               Today
             </Button>
           </div>
-          <h2 className="flex items-center gap-2 font-display text-lg text-night">
+          <h2 className="order-first flex w-full items-center gap-2 font-display text-lg text-night sm:order-none sm:w-auto">
             {view === "month"
               ? format(cursor, "MMMM yyyy")
               : `${format(range.days[0] ?? cursor, "d MMM")} – ${format(range.days[6] ?? cursor, "d MMM yyyy")}`}
             {isFetching && <Spinner className="size-4" />}
           </h2>
-          <div className="hidden gap-2 text-xs md:flex">
+          <div className="flex gap-3 text-xs">
             <span className="flex items-center gap-1">
               <span className="size-2.5 rounded-sm bg-orange-500" /> Show
               program
@@ -221,16 +221,27 @@ function CalendarPage() {
             </span>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <div className="min-w-[760px]">
-            <div className="grid grid-cols-7 border-b bg-muted/40 text-center text-xs font-medium text-muted-foreground">
+        <div>
+          <div>
+            <div
+              className={cn(
+                "grid-cols-7 border-b bg-muted/40 text-center text-xs font-medium text-muted-foreground",
+                view === "week" ? "hidden md:grid" : "grid",
+              )}
+            >
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
                 <div key={d} className="py-2">
-                  {d}
+                  <span className="md:hidden">{d.charAt(0)}</span>
+                  <span className="hidden md:inline">{d}</span>
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-7">
+            <div
+              className={cn(
+                "grid md:grid-cols-7",
+                view === "month" ? "grid-cols-7" : "grid-cols-1",
+              )}
+            >
               {range.days.map((d) => {
                 const k = format(d, "yyyy-MM-dd");
                 const evs = byDay.get(k) ?? [];
@@ -241,26 +252,56 @@ function CalendarPage() {
                     key={k}
                     onClick={() => setDayOpen(k)}
                     className={cn(
-                      "flex flex-col gap-1 border-r border-b p-1.5 text-left align-top transition hover:bg-accent/30",
-                      view === "month" ? "min-h-28" : "min-h-96",
+                      "flex min-w-0 flex-col gap-1 border-r border-b p-1 text-left align-top transition hover:bg-accent/30 md:p-1.5",
+                      view === "month"
+                        ? "min-h-14 items-center md:min-h-28 md:items-stretch"
+                        : "min-h-16 md:min-h-96",
                       view === "month" &&
                         !isSameMonth(d, cursor) &&
                         "bg-muted/30 text-muted-foreground",
                     )}
                   >
-                    <span
-                      className={cn(
-                        "grid size-6 place-items-center rounded-full text-xs",
-                        k === today && "bg-primary font-semibold text-white",
+                    <span className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          "grid size-6 place-items-center rounded-full text-xs",
+                          k === today && "bg-primary font-semibold text-white",
+                        )}
+                      >
+                        {format(d, "d")}
+                      </span>
+                      {view === "week" && (
+                        <span className="text-xs font-medium text-muted-foreground md:hidden">
+                          {format(d, "EEEE")}
+                          {evs.length === 0 && " · free"}
+                        </span>
                       )}
-                    >
-                      {format(d, "d")}
                     </span>
+                    {view === "month" && evs.length > 0 && (
+                      <span className="flex flex-wrap justify-center gap-0.5 md:hidden">
+                        {evs.slice(0, 4).map((e) => (
+                          <span
+                            key={e.key}
+                            className={cn(
+                              "size-1.5 rounded-full",
+                              e.kind === "program"
+                                ? "bg-orange-500"
+                                : e.done
+                                  ? "bg-muted-foreground/40"
+                                  : e.at.getTime() < Date.now()
+                                    ? "bg-red-500"
+                                    : "bg-blue-500",
+                            )}
+                          />
+                        ))}
+                      </span>
+                    )}
                     {evs.slice(0, max).map((e) => (
                       <span
                         key={e.key}
                         className={cn(
                           "truncate rounded border px-1.5 py-0.5 text-[11px] leading-tight",
+                          view === "month" && "hidden md:block",
                           e.kind === "program"
                             ? TYPE_COLOR.program
                             : (TYPE_COLOR[
@@ -278,7 +319,7 @@ function CalendarPage() {
                       </span>
                     ))}
                     {evs.length > max && (
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="hidden text-[11px] text-muted-foreground md:block">
                         +{evs.length - max} more
                       </span>
                     )}

@@ -380,7 +380,43 @@ function LeadTable({
 
   return (
     <Card className="gap-0 overflow-hidden p-0">
-      <Table>
+      <ul className="divide-y md:hidden">
+        {rows.map((l) => (
+          <li key={l.id} className="flex items-start gap-3 px-4 py-3">
+            <Link
+              to="/admin/leads/$id"
+              params={{ id: String(l.id) }}
+              className="min-w-0 flex-1"
+            >
+              <div>
+                <p className="truncate font-medium text-night">{l.name}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {prettyPhone(l.phone)}
+                  {l.city ? ` · ${l.city}` : ""}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  <StatusPill value={l.status} map={LEAD_STATUS_TONE} />
+                  <StatusPill value={l.source} map={SOURCE_TONE} />
+                  {l.priority === "high" && <Pill tone="red">High</Pill>}
+                </div>
+                {l.nextFollowUp && (
+                  <p
+                    className={cn(
+                      "mt-1.5 text-xs text-amber-700",
+                      new Date(l.nextFollowUp).getTime() < Date.now() &&
+                        "font-medium text-red-600",
+                    )}
+                  >
+                    ⏰ {relativeTime(l.nextFollowUp)}
+                  </p>
+                )}
+              </div>
+            </Link>
+            <ContactButtons phone={l.phone} name={l.name} />
+          </li>
+        ))}
+      </ul>
+      <Table containerClassName="hidden md:block">
         <TableHeader>
           {table.getHeaderGroups().map((hg) => (
             <TableRow key={hg.id}>
@@ -413,7 +449,7 @@ function LeadTable({
           ))}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-between border-t px-4 py-3 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-muted-foreground">
         <span>
           {total} lead{total === 1 ? "" : "s"}
         </span>
@@ -455,14 +491,14 @@ function LeadBoard({ rows }: { rows: LeadRow[] }) {
     onError: (e) => toast.error(e.message),
   });
   return (
-    <div className="-mx-4 overflow-x-auto px-4 pb-4">
-      <div className="grid min-w-[1100px] grid-cols-6 gap-3">
+    <div className="-mx-4 snap-x snap-mandatory overflow-x-auto scroll-px-4 px-4 pb-4 md:snap-none">
+      <div className="flex gap-3 md:grid md:min-w-[1100px] md:grid-cols-6">
         {LEAD_STATUSES.map((status) => {
           const col = rows.filter((r) => r.status === status);
           return (
             <div
               key={status}
-              className="rounded-xl bg-muted/60 p-2"
+              className="w-[78vw] max-w-72 shrink-0 snap-start rounded-xl bg-muted/60 p-2 md:w-auto md:max-w-none"
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 const id = Number(e.dataTransfer.getData("text/lead"));
@@ -509,7 +545,12 @@ function LeadBoard({ rows }: { rows: LeadRow[] }) {
         })}
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
-        Tip: drag a card to another column to change its status.
+        <span className="md:hidden">
+          Swipe to see every column. Open a lead to change its status.
+        </span>
+        <span className="hidden md:inline">
+          Tip: drag a card to another column to change its status.
+        </span>
       </p>
     </div>
   );

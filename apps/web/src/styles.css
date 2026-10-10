@@ -166,7 +166,25 @@
   animation: flicker 2.6s ease-in-out infinite;
 }
 
+/* Opacity-only flicker, safe for SVG shapes (no transform-origin drift). */
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  70% {
+    opacity: 1;
+  }
+}
+.animate-glow {
+  animation: glow 2.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .animate-glow,
   .animate-whirl,
   .animate-whirl-reverse,
   .animate-flicker,
@@ -224,4 +242,17 @@
     #000 95%,
     transparent
   );
+}
+
+/* Brighter jaali, shown only where the hero's lantern-light falls. */
+.bg-jaali-lit {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23ecd9a0' stroke-opacity='.55' stroke-width='1.1'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3Ccircle cx='28' cy='28' r='9'/%3E%3Cpath d='M28 0v8M28 48v8M0 28h8M48 28h8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 56px 56px;
+}
+
+/* Hero skyline size; the hero reserves room for it so the dome never sits
+ * under the content. Monument height = width × 200/1180, plus the 48px arcade. */
+.hero-sky {
+  --sky-w: clamp(460px, 88vw, 1080px);
+  padding-bottom: calc(var(--sky-w) * 0.1695 + 48px + 2.5rem);
 }

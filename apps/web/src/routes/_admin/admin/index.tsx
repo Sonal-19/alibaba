@@ -53,18 +53,18 @@ function Kpi({
   to?: string;
 }) {
   const body = (
-    <Card className="flex-row items-center gap-4 p-4 transition hover:shadow-md">
+    <Card className="h-full flex-row items-center gap-3 p-3 transition hover:shadow-md sm:gap-4 sm:p-4">
       <div
         className={cn(
-          "grid size-11 shrink-0 place-items-center rounded-xl",
+          "grid size-9 shrink-0 place-items-center rounded-xl sm:size-11",
           tone,
         )}
       >
-        <Icon className="size-5" />
+        <Icon className="size-4 sm:size-5" />
       </div>
       <div className="min-w-0">
-        <p className="text-2xl font-semibold text-night">{value}</p>
-        <p className="truncate text-xs text-muted-foreground">{label}</p>
+        <p className="text-xl font-semibold text-night sm:text-2xl">{value}</p>
+        <p className="text-xs leading-snug text-muted-foreground">{label}</p>
       </div>
     </Card>
   );
@@ -142,7 +142,7 @@ function Dashboard() {
       <div className="mt-6 grid gap-6 xl:grid-cols-3">
         {/* Follow-ups due */}
         <Card className="gap-0 p-0 xl:col-span-2">
-          <div className="flex items-center justify-between border-b px-5 py-4">
+          <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
             <h2 className="font-semibold text-night">Due today & overdue</h2>
             <Link
               to="/admin/calendar"
@@ -160,27 +160,31 @@ function Dashboard() {
                 return (
                   <li
                     key={f.id}
-                    className="flex flex-wrap items-center gap-3 px-5 py-3"
+                    className="flex items-start gap-3 px-4 py-3 sm:items-center sm:px-5"
                   >
-                    <div className="min-w-0 flex-1">
-                      <Link
-                        to="/admin/leads/$id"
-                        params={{ id: String(f.leadId) }}
-                        className="font-medium text-night hover:text-primary"
-                      >
-                        {f.leadName}
-                      </Link>
-                      <p className="truncate text-sm text-muted-foreground">
-                        {f.title}
-                      </p>
+                    <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                      <div className="min-w-0 flex-1">
+                        <Link
+                          to="/admin/leads/$id"
+                          params={{ id: String(f.leadId) }}
+                          className="font-medium text-night hover:text-primary"
+                        >
+                          {f.leadName}
+                        </Link>
+                        <p className="truncate text-sm text-muted-foreground">
+                          {f.title}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        <Pill tone={overdue ? "red" : "amber"}>
+                          {overdue
+                            ? `Overdue · ${relativeTime(f.dueAt)}`
+                            : formatTime(f.dueAt)}
+                        </Pill>
+                        <Pill tone="night">{titleCase(f.type)}</Pill>
+                      </div>
                     </div>
-                    <Pill tone={overdue ? "red" : "amber"}>
-                      {overdue
-                        ? `Overdue · ${relativeTime(f.dueAt)}`
-                        : formatTime(f.dueAt)}
-                    </Pill>
-                    <Pill tone="night">{titleCase(f.type)}</Pill>
-                    <div className="flex gap-1">
+                    <div className="flex shrink-0 gap-1">
                       <a
                         href={`tel:+${f.leadPhone}`}
                         className="grid size-8 place-items-center rounded-md border hover:bg-muted"
@@ -209,7 +213,7 @@ function Dashboard() {
         </Card>
 
         {/* Lead sources */}
-        <Card className="p-5">
+        <Card className="p-4 sm:p-5">
           <h2 className="font-semibold text-night">Leads by source</h2>
           <p className="-mt-4 text-xs text-muted-foreground">
             {kpis.totalLeads} total · {kpis.completedRate}% completed
@@ -254,7 +258,7 @@ function Dashboard() {
 
         {/* Upcoming programs */}
         <Card className="gap-0 p-0 xl:col-span-2">
-          <div className="flex items-center justify-between border-b px-5 py-4">
+          <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
             <h2 className="font-semibold text-night">Upcoming shows</h2>
             <Link
               to="/admin/bookings"
@@ -272,7 +276,7 @@ function Dashboard() {
                   <Link
                     to="/admin/bookings"
                     search={{ id: b.id }}
-                    className="flex items-center gap-3 px-5 py-3 hover:bg-muted/40"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-muted/40 sm:px-5"
                   >
                     <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-orange-50 text-orange-600">
                       <HandHeart className="size-5" />
@@ -285,7 +289,7 @@ function Dashboard() {
                         {eventLabel(b.eventType)} · {b.city}
                       </p>
                     </div>
-                    <p className="shrink-0 text-right text-sm">
+                    <p className="w-24 shrink-0 text-right text-xs sm:w-auto sm:text-sm">
                       {formatDateTime(b.scheduledStart)}
                     </p>
                   </Link>
@@ -297,12 +301,12 @@ function Dashboard() {
 
         {/* Activity */}
         <Card className="gap-0 p-0">
-          <div className="border-b px-5 py-4">
+          <div className="border-b px-4 py-4 sm:px-5">
             <h2 className="font-semibold text-night">Recent activity</h2>
           </div>
           <ul className="max-h-96 divide-y overflow-y-auto">
             {data.recentActivity.map((a) => (
-              <li key={a.id} className="px-5 py-3 text-sm">
+              <li key={a.id} className="px-4 py-3 text-sm sm:px-5">
                 <Link
                   to="/admin/leads/$id"
                   params={{ id: String(a.leadId) }}

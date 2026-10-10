@@ -6,6 +6,7 @@ import {
   motion,
   useInView,
   useMotionValue,
+  useReducedMotion,
   useSpring,
   useTransform,
 } from "motion/react";
@@ -13,6 +14,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { FaApple, FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa6";
 import { SiYoutubemusic } from "react-icons/si";
+import { HeroBackdrop } from "@/components/landing/hero-backdrop";
 import { useLiteMotion } from "@/hooks/use-media-query";
 import type { SiteSettings } from "@/hooks/use-site-settings";
 import { useYoutubeTrack } from "@/hooks/use-youtube-track";
@@ -22,116 +24,38 @@ import { cn } from "@/lib/utils";
 /** Words that cycle under the name: the four moods of a Sufi mehfil. */
 const MOODS = ["Ishq", "Ibadat", "Malang", "Maula", "Sukoon"];
 
-const DIYAS = [
-  { left: "8%", delay: 0, duration: 14, size: 6 },
-  { left: "18%", delay: 3, duration: 17, size: 4 },
-  { left: "29%", delay: 6, duration: 15, size: 5 },
-  { left: "41%", delay: 1.5, duration: 18, size: 3 },
-  { left: "57%", delay: 4.5, duration: 16, size: 5 },
-  { left: "68%", delay: 7.5, duration: 14, size: 4 },
-  { left: "79%", delay: 2.2, duration: 19, size: 6 },
-  { left: "91%", delay: 5.4, duration: 15, size: 4 },
-];
-
-/** Concentric star rosette, the kind carved into dargah ceilings. */
-function Rosette({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 400 400"
-      className={cn("fill-none stroke-gold", className)}
-      aria-hidden
-    >
-      <circle
-        cx="200"
-        cy="200"
-        r="196"
-        strokeWidth="0.6"
-        strokeDasharray="2 5"
-      />
-      <circle cx="200" cy="200" r="176" strokeWidth="0.8" />
-      <circle
-        cx="200"
-        cy="200"
-        r="120"
-        strokeWidth="0.6"
-        strokeDasharray="4 4"
-      />
-      {Array.from({ length: 12 }).map((_, i) => (
-        <g key={i} transform={`rotate(${i * 30} 200 200)`} strokeWidth="0.8">
-          <path d="M200 24 L222 120 L200 176 L178 120 Z" />
-          <path d="M200 176 Q240 150 262 96" strokeOpacity="0.6" />
-          <circle cx="200" cy="40" r="3" />
-        </g>
-      ))}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <rect
-          key={i}
-          x="150"
-          y="150"
-          width="100"
-          height="100"
-          transform={`rotate(${i * 11.25} 200 200)`}
-          strokeWidth="0.5"
-          strokeOpacity="0.7"
-        />
-      ))}
-    </svg>
-  );
-}
-
 export function HeroSection({ s }: { s?: SiteSettings }) {
   const lite = useLiteMotion();
+  const reduced = useReducedMotion() ?? false;
   const ref = useRef<HTMLElement | null>(null);
   const inView = useInView(ref, { margin: "80px" });
-  const animate = !lite && inView;
+  const animate = !reduced && inView;
 
   const videoId = youtubeId(s?.heroTrackUrl) ?? "";
   const trackTitle = s?.heroTrackTitle || "Nachde Malang";
   const trackSubtitle = s?.heroTrackSubtitle || "Sufi kalam";
   const player = useYoutubeTrack(videoId);
 
-  // Mouse parallax and interactive cursor spotlight
+  // The portrait drifts gently with the mouse (desktop only).
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const cursorX = useMotionValue(50);
-  const cursorY = useMotionValue(40);
   const sx = useSpring(mx, { stiffness: 60, damping: 18 });
   const sy = useSpring(my, { stiffness: 60, damping: 18 });
-  const scX = useSpring(cursorX, { stiffness: 45, damping: 20 });
-  const scY = useSpring(cursorY, { stiffness: 45, damping: 20 });
-  const farX = useTransform(sx, (v) => v * -24);
-  const farY = useTransform(sy, (v) => v * -24);
   const nearX = useTransform(sx, (v) => v * 14);
   const nearY = useTransform(sy, (v) => v * 10);
 
   const onMove = (e: React.MouseEvent<HTMLElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-    cursorX.set(px * 100);
-    cursorY.set(py * 100);
-    mx.set(px - 0.5);
-    my.set(py - 0.5);
-  };
-
-  const onTouch = (e: React.TouchEvent<HTMLElement>) => {
-    const t = e.touches[0];
-    if (!t) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    const px = (t.clientX - r.left) / r.width;
-    const py = (t.clientY - r.top) / r.height;
-    cursorX.set(px * 100);
-    cursorY.set(py * 100);
-    mx.set(px - 0.5);
-    my.set(py - 0.5);
+    mx.set((e.clientX - r.left) / r.width - 0.5);
+    my.set((e.clientY - r.top) / r.height - 0.5);
   };
 
   const [mood, setMood] = useState(0);
   useEffect(() => {
-    if (lite) return;
+    if (reduced) return;
     const t = setInterval(() => setMood((m) => (m + 1) % MOODS.length), 2600);
     return () => clearInterval(t);
-  }, [lite]);
+  }, [reduced]);
 
   const [hoverSong, setHoverSong] = useState<string | null>(null);
 
@@ -157,117 +81,11 @@ export function HeroSection({ s }: { s?: SiteSettings }) {
       id="home"
       ref={ref}
       onMouseMove={lite ? undefined : onMove}
-      onTouchMove={lite ? undefined : onTouch}
-      // className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-night pt-24 pb-10 text-ivory"
-      className="relative isolate flex  flex-col overflow-hidden bg-night pt-24 pb-10 text-ivory"
+      className="hero-sky relative isolate flex touch-pan-y flex-col overflow-hidden bg-night pt-22 text-ivory sm:pt-24"
     >
-      {/* Background: interactive ambient light, lattice, rosette, sacred geometry & acoustic ripples */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        {/* Deep emerald-night base */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,#1d5a4d_0%,#0f2e28_38%,#0b1f1c_70%)]" />
+      <HeroBackdrop sectionRef={ref} playing={playing} reduced={reduced} />
 
-        {/* Dynamic interactive cursor/touch spotlight */}
-        <motion.div
-          className="pointer-events-none absolute inset-0 mix-blend-screen"
-          style={{
-            background: useTransform(
-              [scX, scY],
-              ([x, y]) =>
-                `radial-gradient(750px circle at ${x}% ${y}%, rgba(201,162,74,0.22) 0%, rgba(29,90,77,0.3) 38%, transparent 72%)`,
-            ),
-          }}
-        />
-
-        {/* Celestial divine light beam from top */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_45%_at_50%_0%,rgba(236,217,160,0.16),transparent_70%)]" />
-
-        {/* Sacred jaali pattern illuminated by the light */}
-        <div className="absolute inset-0 bg-jaali opacity-60" />
-
-        {/* Concentric acoustic resonance waves behind portrait */}
-        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[46%]">
-          {[0, 1, 2, 3].map((ring) => (
-            <motion.div
-              key={ring}
-              className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/15"
-              style={{
-                width: 380 + ring * 160,
-                height: 380 + ring * 160,
-              }}
-              animate={
-                animate
-                  ? {
-                      scale: playing ? [0.94, 1.15, 0.94] : [0.98, 1.05, 0.98],
-                      opacity: playing ? [0.45, 0.1, 0.45] : [0.22, 0.07, 0.22],
-                    }
-                  : undefined
-              }
-              transition={{
-                duration: playing ? 2.8 : 6,
-                delay: ring * 0.7,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Whirling rosette */}
-        <motion.div
-          style={lite ? undefined : { x: farX, y: farY }}
-          className="absolute top-1/2 left-1/2 size-[760px] -translate-x-1/2 -translate-y-[46%] sm:size-[900px] lg:size-[1100px]"
-        >
-          <Rosette
-            className={cn(
-              "size-full opacity-[0.14]",
-              animate && "animate-whirl",
-            )}
-          />
-        </motion.div>
-
-        {/* Mystical Calligraphy */}
-        <motion.p
-          style={lite ? undefined : { x: farX, y: farY }}
-          className="absolute top-[18%] -left-6 select-none font-urdu text-[9rem] leading-none text-gold/[0.07] sm:text-[13rem] lg:left-[4%] lg:text-[17rem]"
-          dir="rtl"
-          aria-hidden
-        >
-          عشق
-        </motion.p>
-        <motion.p
-          style={lite ? undefined : { x: farX, y: farY }}
-          className="absolute right-[2%] bottom-[16%] select-none font-gurmukhi text-[5rem] leading-none text-gold/[0.06] sm:text-[8rem]"
-          aria-hidden
-        >
-          ਇਸ਼ਕ
-        </motion.p>
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-night to-transparent" />
-
-        {/* Organic rising golden diya sparks with horizontal sway */}
-        {animate &&
-          DIYAS.map((d, i) => (
-            <motion.span
-              key={i}
-              initial={{ y: 0, opacity: 0 }}
-              animate={{
-                y: [-10, -660],
-                x: [0, (i % 2 === 0 ? 1 : -1) * 14, 0],
-                opacity: [0, 0.9, 0.7, 0],
-                scale: [0.8, 1.2, 0.9, 0.4],
-              }}
-              transition={{
-                duration: playing ? d.duration * 0.6 : d.duration,
-                delay: d.delay,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "easeOut",
-              }}
-              style={{ left: d.left, width: d.size, height: d.size * 1.5 }}
-              className="absolute bottom-0 rounded-full bg-gradient-to-t from-maroon via-gold to-gold-light shadow-[0_0_16px_5px_rgba(236,217,160,0.4)]"
-            />
-          ))}
-      </div>
-
-      <div className="mx-auto grid w-full max-w-7xl flex-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:gap-8 xl:gap-12">
+      <div className="mx-auto grid w-full max-w-7xl flex-1 items-center gap-8 px-4 sm:gap-10 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:gap-8 xl:gap-12">
         {/* Left: name & call to action */}
         <motion.div
           initial={{ opacity: 0, x: -24 }}
@@ -280,7 +98,7 @@ export function HeroSection({ s }: { s?: SiteSettings }) {
             ਸੂਫ਼ੀ · صوفی · Sufi
             <span className="h-px w-8 bg-gold/60" />
           </p>
-          <h1 className="mt-3 font-brand text-5xl leading-[0.95] tracking-wide sm:text-6xl xl:text-7xl">
+          <h1 className="mt-3 font-brand text-[2.6rem] leading-[0.95] tracking-wide min-[400px]:text-5xl sm:text-6xl xl:text-7xl">
             <span className="text-gold-gradient">Sardar</span>
             <br />
             <span className="text-ivory">Ali</span>
@@ -291,9 +109,21 @@ export function HeroSection({ s }: { s?: SiteSettings }) {
               <AnimatePresence mode="wait">
                 <motion.span
                   key={MOODS[mood]}
-                  initial={{ y: 18, opacity: 0, filter: "blur(4px)" }}
-                  animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                  exit={{ y: -18, opacity: 0, filter: "blur(4px)" }}
+                  initial={{
+                    y: 18,
+                    opacity: 0,
+                    filter: lite ? "none" : "blur(4px)",
+                  }}
+                  animate={{
+                    y: 0,
+                    opacity: 1,
+                    filter: lite ? "none" : "blur(0px)",
+                  }}
+                  exit={{
+                    y: -18,
+                    opacity: 0,
+                    filter: lite ? "none" : "blur(4px)",
+                  }}
                   transition={{ duration: 0.45 }}
                   className="inline-block font-semibold text-gold-light not-italic"
                 >
@@ -306,10 +136,10 @@ export function HeroSection({ s }: { s?: SiteSettings }) {
             {s?.tagline ?? "Punjabi Folk · Sufi Kalam · Live Mehfils"}
           </p>
 
-          <div className="mt-7 flex items-center gap-3 justify-center lg:justify-start">
+          <div className="mt-7 flex items-center justify-center gap-3 lg:justify-start">
             <Link
               to="/book"
-              className="group relative inline-flex h-12 items-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-gold px-5 sm:px-7 font-semibold text-night shadow-[0_10px_30px_-8px_rgba(201,162,74,0.7)] transition hover:bg-gold-light"
+              className="group relative inline-flex h-12 items-center gap-2 overflow-hidden whitespace-nowrap rounded-lg bg-gold px-4 sm:px-7 font-semibold text-night shadow-[0_10px_30px_-8px_rgba(201,162,74,0.7)] transition hover:bg-gold-light"
             >
               <CalendarHeart className="size-4 transition group-hover:-rotate-12" />
               Book a Mehfil
@@ -347,10 +177,9 @@ export function HeroSection({ s }: { s?: SiteSettings }) {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, ease: "easeOut" }}
           style={lite ? undefined : { x: nearX, y: nearY }}
-          className="relative order-1 mx-auto w-[260px] sm:w-[320px] lg:order-2 lg:w-[360px]"
+          className="relative order-1 mx-auto w-[min(230px,62vw)] sm:w-[300px] lg:order-2 lg:w-[340px] xl:w-[360px]"
         >
           <div className="relative">
-            {/* Halo rings that breathe with the music */}
             {[0, 1, 2].map((i) => (
               <motion.span
                 key={i}
@@ -443,7 +272,7 @@ export function HeroSection({ s }: { s?: SiteSettings }) {
               aria-hidden
             />
           )}
-          <p className="mt-12 text-center text-xs text-ivory/55">
+          <p className="mt-12 text-center text-xs text-ivory/60">
             {playing ? (
               <span className="inline-flex items-center gap-1.5 text-gold-light">
                 <span className="flex h-3 items-end gap-0.5">
