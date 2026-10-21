@@ -50,7 +50,7 @@ function BlogAdmin() {
     <>
       <PageHeader
         title="Blog"
-        description="Posts appear on sardarali.com as soon as they're published."
+        description="Posts appear on thesardarali.com as soon as they're published."
         actions={
           <Button asChild>
             <Link to="/admin/blog/$id" params={{ id: "new" }}>

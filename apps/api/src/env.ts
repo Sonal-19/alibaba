@@ -12,11 +12,14 @@ export const UPLOADS_DIR = process.env.UPLOADS_DIR || "./uploads";
 
 /** Public site origin — used to build share links in WhatsApp messages. */
 export const PUBLIC_SITE_URL =
-  process.env.PUBLIC_SITE_URL || "https://sardarali.com";
+  process.env.PUBLIC_SITE_URL || "https://thesardarali.com";
+
+/** Built web app (index.html) the SEO page renderer fills in per route. */
+export const FRONTEND_DIR = process.env.FRONTEND_DIR || "../web/dist";
 
 export const ALLOWED_ORIGIN_HOSTS = [
-  "https://sardarali.com",
-  "https://www.sardarali.com",
+  "https://thesardarali.com",
+  "https://www.thesardarali.com",
 ];
 
 export const SMTP = {

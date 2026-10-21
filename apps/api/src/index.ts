@@ -1,6 +1,7 @@
 import cors from "@elysiajs/cors";
 import Elysia from "elysia";
 import { mainController } from "./controllers";
+import { seoController } from "./controllers/seo-controller";
 import { connectionTest } from "./db/connect";
 import { ALLOWED_ORIGIN_HOSTS, IS_PROD, PORT, UPLOADS_DIR } from "./env";
 import { coreAuthService } from "./lib/services/core-auth-service";
@@ -48,6 +49,7 @@ const app = new Elysia({ name: "main_app" })
     return file;
   })
   .use(mainController)
+  .use(seoController)
   .get("/health", ({ request }: { request: Request }) => ({
     status: "I am very healthy",
     timestamp: new Date().toISOString(),

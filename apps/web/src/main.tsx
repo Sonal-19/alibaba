@@ -38,6 +38,8 @@ declare module "@tanstack/react-router" {
 
 // Render the app
 const rootElement = document.getElementById("app");
+// Crawlable fallback the server renders into #app (see api seo-service).
+rootElement?.querySelector("[data-seo-fallback]")?.remove();
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(

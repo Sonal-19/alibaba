@@ -1,6 +1,6 @@
 # Sardar Ali: Portfolio + CRM
 
-Official website of **Sardar Ali**, Punjabi & Sufi singer (sardarali.com), plus the admin CRM
+Official website of **Sardar Ali**, Punjabi & Sufi singer (thesardarali.com), plus the admin CRM
 for leads, show bookings, release posters, follow-ups, blog and WhatsApp outreach.
 
 - `apps/api`: Bun + Elysia + Drizzle (Postgres). Port **4300**.

@@ -664,7 +664,7 @@ function SendTab({ onCreated }: { onCreated: (id: number) => void }) {
           <div className="ml-auto max-w-[85%] rounded-lg rounded-tr-none bg-[#d9fdd3] p-3 text-sm whitespace-pre-wrap shadow-sm">
             {renderTemplate(message || "Your message…", {
               name: "Jaskaran",
-              link: link || "https://sardarali.com",
+              link: link || "https://thesardarali.com",
             })}
           </div>
         </div>
